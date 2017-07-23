@@ -26,10 +26,10 @@ contract ReviewToken {
     event logReview(string, uint256);
     
     // to call constructor via console, append the input in hex + pad to 256 bytes
-    function ReviewToken() {
-        owner = msg.sender;
-        logAddress('Owner', owner);
-    }
+    // function ReviewToken(address _owner) {
+    //     owner = _owner;
+    //     logAddress('Owner', owner);
+    // }
     
     // Merchant registers product + with a commit reveal scheme to prevent censorship
     function register (address _product, bytes32 _voteCommit) returns (bool success) {
@@ -37,7 +37,7 @@ contract ReviewToken {
         
         productTime[_product] = now;
         voteCommits[_product] = _voteCommit;
-        logAddress('Registered - ', _product);
+        logAddress('Registered', _product);
         return true;
     } 
     
@@ -61,16 +61,16 @@ contract ReviewToken {
     }
     
     // All code below is related for tokens
-    // function deposit () payable returns (bool success) {
-    //     if (msg.value == 0) return false;
-    //     balances[msg.sender] = balances[msg.sender].safeAdd(msg.value);
-    //     totalSupply = totalSupply.safeAdd(msg.value);
-    // return true;
-    // }
+    function deposit () payable returns (bool success) {
+        if (msg.value == 0) return false;
+        balances[msg.sender] = balances[msg.sender].safeAdd(msg.value);
+        totalSupply = totalSupply.safeAdd(msg.value);
+        return true;
+    }
     
      function withdraw (uint256 amount) returns (bool success) {
-        if (amount == 0) return false;
-        if (balances[msg.sender] < amount) return false;
+        require(amount != 0)
+        require(balances[msg.sender] >= amount)
         balances[msg.sender] = balances[msg.sender].safeSubtract(amount);
         bool rv = msg.sender.send(amount);
         if (!rv) {
