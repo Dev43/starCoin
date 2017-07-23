@@ -2,8 +2,8 @@ var express = require('express');
 var qtumLib = require('../qtum-js/src/index');
 var qtum = require('../qtum-promise/lib/index');
 const { exec } = require('child_process');
-const IPFS = require('ipfs')
 var utils = require('ethereumjs-util');
+var ipfsAPI = require('ipfs-api')
 
 // const node = new IPFS()
 
@@ -38,7 +38,12 @@ router.post('/merchant', function(req, res, next) {
     const formattedData = exec(`ethabi encode function ./contractAbi.json register -p ${hexAddress} -p ${s} --lenient`);
     formattedData.stdout.on('data', (data) => {
       console.log(data)
-        executeOnBlockchain(['callcontract', contractAddress, data]).then(console.log)
+        executeOnBlockchain(['callcontract', contractAddress, data]).then((data) => {
+          console.log(data);
+        }).then(() => {
+          executeOnBlockchain(['generate', 1]).then(console.log)
+        })
+        
         executeOnBlockchain(['sendtocontract', contractAddress, data]).then((txInfo) => {
           res.status(200).send({ txInfo });
         })
@@ -65,7 +70,9 @@ router.post('/user', function(req, res, next) {
     const formattedData = exec(`ethabi encode function ./contractAbi.json review -p ${hexAddress_product} -p ${review_ipfs_address} -p ${pre_hash_secret} --lenient`);
     formattedData.stdout.on('data', (data) => {
       console.log(data)
-        executeOnBlockchain(['callcontract', contractAddress, data]).then(console.log)
+        executeOnBlockchain(['callcontract', contractAddress, data]).then((data) => {
+          executeOnBlockchain(['generate', 1]).then(console.log)
+        })
         executeOnBlockchain(['sendtocontract', contractAddress, data]).then((txInfo) => {
           res.status(200).send({ txInfo });
         })
