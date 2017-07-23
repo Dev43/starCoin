@@ -17,7 +17,7 @@ contract ReviewToken {
     address public owner;
     mapping (address => bytes32) public voteCommits; // Commit associated with the product
     mapping (address => uint256) public productTime; // Time of product registration
-    mapping (address => address) public review; // Product review
+    mapping (address => address) public reviews; // Product review
     
     mapping(address => uint256) public balances; // balance of Review Tokens
     
@@ -47,14 +47,14 @@ contract ReviewToken {
         assert(productTime[_product] <= now - 60 seconds); // can only review after x time
         assert(voteCommits[_product] == keccak256(_vote)); // _vote must match commit
         
-        review[_product] = _review;
+        reviews[_product] = _review;
         balances[msg.sender].safeAdd(1);
         logReview('Review recorded, new balance: ', balances[msg.sender]);
         return true;
     }
     function getReview(address _product) returns (address content) {
-        require(review[_product] != address(0x0)); // there must be a review for that address
-        return review[_product];
+        require(reviews[_product] != address(0x0)); // there must be a review for that address
+        return reviews[_product];
     }
     function balanceOf(address _owner) constant returns (uint256 balance) {
         return balances[_owner];
