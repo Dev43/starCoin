@@ -4,15 +4,13 @@ var qtum = require('../qtum-promise/lib/index');
 const { exec } = require('child_process');
 
 var router = express.Router();
-var pubKey = 'qJPfQK8gcT64Siuc4PhzGBXZYFxgi5b7rF';
-var privKey = 'cTbQcD8pnnf8RmHupe4VbgugkmwF1NPUrDVYGwzkmPS5xvWU8Tu3';
-var contractAddress = '0e0571d0cfe4b5dfa6f5e4e3b0284d915eea1fa9';
-var registerFunctionCall = '96f726b0000000000000000000000000000000000000000000000';
+var contractAddress = 'f84a39b9a4cbd1b84f824d587ef7f43b297f3a82';
 
 /* POST with data */
 router.get('/', function(req, res, next) {
-  var secret = req.secret || '1761766f66796f726b1111000000000000000000000000000000000000000100' ;
-  var address = req.address || '844864f8792fb7f20e2daa893de8f3a465749fdf';
+  var secret = req.secret || '1761766f66796f726b1111000000000000000000000000000000000000000100' ; // secret needs to be 64 of length
+  var s = (qtumLib.crypto.sha256(secret).toString('hex'))
+  var address = req.address || 'f84a39b9a4cbd1b84f824d587ef7f43b297f3a82'; // contract address
   
   
   var client = new qtum.Client({
@@ -32,23 +30,11 @@ router.get('/', function(req, res, next) {
     })
   }
 
-      // executeOnBlockchain(['listunspent'])
-      // .then((UTXOS) => {
-      //   var lastUTXO = UTXOS.pop();
-      //   return executeOnBlockchain(['createrawtransaction', [{"txid": lastUTXO.txid, "vout": lastUTXO.vout}], {"qXdoFwtBsVmgsyvACiLmHPHNmP2CkqGzD1": Math.floor(lastUTXO.amount - 1)}])
-        
-      // }).then((tx) => {
-      //   return executeOnBlockchain(['signrawtransaction', tx])
-      // }).then((signedTx) => {
-      //   return executeOnBlockchain(['sendrawtransaction', signedTx.hex, true])
-      // }).then(console.log)
-
-
-      const formattedData = exec(`ethabi encode function ./contractAbi.json register -p ${address} ${secret} --lenient`);
-      // const formattedData = exec(`ethabi encode function ./contractAbi.json register -p 0e0571d0cfe4b5dfa6f5e4e3b0284d915eea1fa9 6761766f66796f726b0000000000000000000000000000000000000000000000`);
+      const formattedData = exec(`ethabi encode function ./contractAbi.json register -p ${address} -p ${s} --lenient`);
 
       formattedData.stdout.on('data', (data) => {
         console.log(data)
+        executeOnBlockchain(['callcontract', contractAddress, data]).then(console.log)
         executeOnBlockchain(['sendtocontract', contractAddress, data]).then(console.log)
       });
 
@@ -59,7 +45,6 @@ router.get('/', function(req, res, next) {
       formattedData.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
       });
-  
 
   res.status(200).send({ title: 'Express' });
 });
