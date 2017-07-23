@@ -647,7 +647,7 @@ function canSign (input) {
 }
 
 TransactionBuilder.prototype.sign = function (vin, keyPair, redeemScript, hashType, witnessValue, witnessScript) {
-  if (keyPair.network !== this.network) throw new Error('Inconsistent network')
+  // if (keyPair.network !== this.network) throw new Error('Inconsistent network')
   if (!this.inputs[vin]) throw new Error('No input at index: ' + vin)
   hashType = hashType || Transaction.SIGHASH_ALL
 

@@ -72,7 +72,6 @@ ECPair.fromWIF = function (string, network) {
   // otherwise, assume a network object (or default to bitcoin)
   } else {
     network = network || NETWORKS.bitcoin
-
     // if (version !== network.wif) throw new Error('Invalid network version')
   }
 
