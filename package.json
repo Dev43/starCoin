@@ -19,6 +19,7 @@
     "ethereumjs-util": "^5.1.2",
     "express": "~4.15.2",
     "install": "^0.10.1",
+    "ipfs": "^0.25.0",
     "morgan": "~1.8.1",
     "npm": "^5.3.0",
     "serve-favicon": "~2.4.2",

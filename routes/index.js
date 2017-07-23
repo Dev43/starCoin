@@ -2,10 +2,13 @@ var express = require('express');
 var qtumLib = require('../qtum-js/src/index');
 var qtum = require('../qtum-promise/lib/index');
 const { exec } = require('child_process');
+const IPFS = require('ipfs')
+var utils = require('ethereumjs-util');
+
+// const node = new IPFS()
 
 var router = express.Router();
 var contractAddress = 'f84a39b9a4cbd1b84f824d587ef7f43b297f3a82';
-var utils = require('ethereumjs-util');
 
   var client = new qtum.Client({
     host: '159.203.87.162',
@@ -36,7 +39,9 @@ router.get('/merchant', function(req, res, next) {
     formattedData.stdout.on('data', (data) => {
       console.log(data)
         executeOnBlockchain(['callcontract', contractAddress, data]).then(console.log)
-        executeOnBlockchain(['sendtocontract', contractAddress, data]).then(console.log)
+        executeOnBlockchain(['sendtocontract', contractAddress, data]).then((txInfo) => {
+          res.status(200).send({ txInfo });
+        })
     });
 
         formattedData.stderr.on('data', (data) => {
@@ -46,8 +51,6 @@ router.get('/merchant', function(req, res, next) {
         formattedData.on('close', (code) => {
           console.log(`child process exited with code ${code}`);
         });
-
-    res.status(200).send({ status: 'ok' });
   });
 
 });
@@ -63,7 +66,9 @@ router.get('/user', function(req, res, next) {
     formattedData.stdout.on('data', (data) => {
       console.log(data)
         executeOnBlockchain(['callcontract', contractAddress, data]).then(console.log)
-        executeOnBlockchain(['sendtocontract', contractAddress, data]).then(console.log)
+        executeOnBlockchain(['sendtocontract', contractAddress, data]).then((txInfo) => {
+          res.status(200).send({ txInfo });
+        })
     });
 
         formattedData.stderr.on('data', (data) => {
@@ -73,8 +78,6 @@ router.get('/user', function(req, res, next) {
         formattedData.on('close', (code) => {
           console.log(`child process exited with code ${code}`);
         });
-
-    res.status(200).send({ status: 'ok' });
   });
 });
 
