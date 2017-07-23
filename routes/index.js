@@ -29,7 +29,7 @@ var contractAddress = 'f84a39b9a4cbd1b84f824d587ef7f43b297f3a82';
   }
 
 /* POST with data */
-router.get('/merchant', function(req, res, next) {
+router.post('/merchant', function(req, res, next) {
   var secret = req.secret || '1234' ; // secret needs to be 64 of length
   var s = (utils.sha3(secret).toString('hex'))
   var address = req.address || 'qgsipVVLjq1WsTwmfXp39jjs8jGRyinrkE'; // "product address"
@@ -56,7 +56,7 @@ router.get('/merchant', function(req, res, next) {
 });
 
 /* POST data to the blockchain for the user */
-router.get('/user', function(req, res, next) {
+router.post('/user', function(req, res, next) {
   var review_ipfs_address = req.review_ipfs_address ? JSON.stringify(req.review_address) : 'ffc2cb56036e8a052fea7ca3de726d14df83695f'; // maybe send to IPFS
   var pre_hash_secret = req.pre_hash_secret ? JSON.stringify(req.pre_hash_secret) : '1234';
   var product_id = req.product_id || 'qgsipVVLjq1WsTwmfXp39jjs8jGRyinrkE'; //"product address"
