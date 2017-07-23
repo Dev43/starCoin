@@ -44,7 +44,7 @@ router.get('/', function(req, res, next) {
 
   
 
-  res.render('index', { title: 'Express' });
+  res.send(200, { title: 'Express' });
 });
 
 module.exports = router;
