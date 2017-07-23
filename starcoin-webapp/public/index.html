@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <title>StarCoin Demo</title>
+
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Chrome -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Starcoin">
+
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="bower_components/web-animations-js/web-animations.min.js"></script>
+  <link rel="import" href="bower_components/polymerfire/firebase-app.html">
+  <link rel="import" href="bower_components/app-layout/demo/demo1.html">
+  <link rel="import" href="main-app.html">
+ 
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body unresolved>
+
+   <!-- Configure Firebase app: -->
+  <firebase-app name="dist-trade" api-key="AIzaSyDNs7XA6OAPBV8Xnw7Uq5seNjUTBHg4LBI" auth-domain="dist-trade.firebaseapp.com"
+    database-url="https://dist-trade.firebaseio.com">
+  </firebase-app> 
+
+  <!-- Instantiate the main web app: -->
+<!--<star-login></star-login> -->
+ <main-app></main-app>
+
+</body>
+
+</html>

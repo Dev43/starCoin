@@ -1,0 +1,55 @@
+<link rel="import" href="views/elements.html">
+<link rel="import" href="bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html">
+<link rel="import" href="bower_components/polymerfire/polymerfire.html">
+
+
+<script src="bower_components/web-animations-js/web-animations.min.js"></script>
+
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<link rel="import" href="bower_components/font-roboto/roboto.html">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="bower_components/app-layout/demo/sample-content.html">
+<link rel="import" href="bower_components/app-layout/demo/demo1.html">
+
+<!--<link rel="import" href="views/star-login.html">-->
+
+
+<dom-module id="main-app">
+    <template>
+        <!--<style></style>-->
+        <template is="dom-if" if="[[!user]]">
+        <!--<ba-login id="auth" on-sign-in="signIn" signed-in="[[signedIn]]" user="{{user}}">
+        </ba-login>-->
+        <star-login type="[[accountType]]" user="{{user}}" signed-in ="[[signedIn]]"></star-login>
+        </template>
+        <firebase-auth id="auth" app-name="dist-trade" provider="google" status-known="{{statusKnown}}" signed-in="{{signedIn}}" user="{{user}}">
+        </firebase-auth>
+        <template is="dom-if" if="[[user]]">
+        <buyer></buyer>
+        </template>
+
+        <!--
+        </template>
+        <firebase-auth id="auth" app-name="dist-trade" provider="google" status-known="{{statusKnown}}" signed-in="{{signedIn}}" user="{{user}}">
+        </firebase-auth>-->
+    </template>
+    <script>
+        Polymer({
+            is: 'main-app',
+
+            signIn() {
+                this.$.auth.signInWithPopup();
+            },
+
+            signOut() {
+                this.$.auth.signOut();
+            }
+        });
+    </script>
+</dom-module>

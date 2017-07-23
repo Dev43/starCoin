@@ -1,0 +1,402 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+
+<dom-module id="star-login">
+  <template>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      img {
+        display: block;
+        margin: 0 auto;
+        max-width: 350px;
+        max-height: 95px;
+        width: auto;
+        height: auto;
+      }
+
+      body {
+        font-family: Helvetica;
+        background: #eee;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      hgroup {
+        text-align: center;
+        margin-top: 4em;
+      }
+
+      h1,
+      h3 {
+        font-weight: 300;
+      }
+
+      h1 {
+        color: #636363;
+        margin-top: auto;
+      }
+
+      h3 {
+        color: #ff6c01;
+      }
+
+      form {
+        width: 380px;
+        margin: 3em auto;
+        padding: 3em 2em 2em 2em;
+        background: #fafafa;
+        border: 1px solid #ebebeb;
+        box-shadow: rgba(0, 0, 0, 0.14902) 0px 1px 1px 0px, rgba(0, 0, 0, 0.09804) 0px 1px 2px 0px;
+      }
+
+      .group {
+        position: relative;
+        margin-bottom: 35px;
+      }
+
+      paper-input[autocomplete] {
+        --paper-input-container-input: {
+          /* Remove autocomplete highlight color in Chrome
+         http://stackoverflow.com/a/36140769 */
+          -webkit-transition: background-color 0s ease-in-out 50000s, color 0s ease-in-out 5000s;
+        }
+        ;
+      }
+
+      paper-input {
+        position: relative;
+        margin-bottom: 45px;
+      }
+
+      input {
+        font-size: 18px;
+        padding: 10px 10px 10px 5px;
+        -webkit-appearance: none;
+        display: block;
+        background: #fafafa;
+        color: #636363;
+        width: 100%;
+        border: none;
+        border-radius: 0;
+        border-bottom: 1px solid #757575;
+      }
+
+      input:focus {
+        outline: none;
+      }
+      /* Label */
+
+      label {
+        color: #999;
+        font-size: 18px;
+        font-weight: normal;
+        position: absolute;
+        pointer-events: none;
+        left: 5px;
+        top: 10px;
+        transition: all 0.2s ease;
+      }
+      /* active */
+
+      input:focus~label,
+      input.used~label {
+        top: -20px;
+        transform: scale(.75);
+        left: -2px;
+        /* font-size: 14px; */
+        color: #ff6c01;
+      }
+      /* Underline */
+
+      .bar {
+        position: relative;
+        display: block;
+        width: 100%;
+      }
+
+      .bar:before,
+      .bar:after {
+        content: '';
+        height: 2px;
+        width: 0;
+        bottom: 1px;
+        position: absolute;
+        background: #ff6c01;
+        transition: all 0.2s ease;
+      }
+
+      .bar:before {
+        left: 50%;
+      }
+
+      .bar:after {
+        right: 50%;
+      }
+      /* active */
+
+      input:focus~.bar:before,
+      input:focus~.bar:after {
+        width: 50%;
+      }
+      /* Highlight */
+
+      .highlight {
+        position: absolute;
+        height: 60%;
+        width: 100px;
+        top: 25%;
+        left: 0;
+        pointer-events: none;
+        opacity: 0.5;
+      }
+      /* active */
+
+      input:focus~.highlight {
+        animation: inputHighlighter 0.3s ease;
+      }
+      /* Animations */
+
+      @keyframes inputHighlighter {
+        from {
+          background: #ff6c01;
+        }
+        to {
+          width: 0;
+          background: transparent;
+        }
+      }
+      /* Button */
+
+      .button {
+        position: relative;
+        display: inline-block;
+        padding: 12px 24px;
+        margin: 2em 0 1em 0;
+        width: 100%;
+        vertical-align: middle;
+        color: #fff;
+        font-size: 16px;
+        line-height: 20px;
+        -webkit-font-smoothing: antialiased;
+        text-align: center;
+        letter-spacing: 1px;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-transform: none;
+      }
+
+      .button:focus {
+        outline: 0;
+      }
+      /* Button modifiers */
+
+      .buttonBlue {
+        background: #1a237e;
+      }
+
+      .buttonBlue:hover {
+        background: #1a237e;
+      }
+      /* Ripples container */
+
+      .ripples {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: transparent;
+      }
+      /* Ripples circle */
+
+      .ripplesCircle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .ripples.is-active .ripplesCircle {
+        animation: ripples .4s ease-in;
+      }
+      /* Ripples animation */
+
+      @keyframes ripples {
+        0% {
+          opacity: 0;
+        }
+
+        25% {
+          opacity: 1;
+        }
+
+        100% {
+          width: 200%;
+          padding-bottom: 200%;
+          opacity: 0;
+        }
+      }
+
+      footer {
+        text-align: center;
+      }
+
+      footer p {
+        color: #888;
+        font-size: 16px;
+        letter-spacing: .4px;
+      }
+
+      footer a {
+        color: #4a89dc;
+        text-decoration: none;
+        transition: all .2s ease;
+      }
+
+      footer a:hover {
+        color: #666;
+        text-decoration: underline;
+      }
+
+      footer img {
+        width: 80px;
+        transition: all .2s ease;
+      }
+
+      footer img:hover {
+        opacity: .83;
+      }
+
+      footer img:focus,
+      footer a:focus {
+        outline: none;
+      }
+
+       :host([signed-in]) {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      paper-button>* {
+        vertical-align: middle;
+        text-transform: none;
+      }
+
+      .paper-checkbox-1 {
+        margin-right: 5em;
+      }
+
+      signinButton {
+        text-align: center;
+      }
+    </style>
+    <hgroup>
+      <img src="../images/starcoin.png"></img>
+    </hgroup>
+    <form>
+      <h1>Sign in</h1>
+      <paper-input id="email" name="email" label="Email" autocomplete="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" error-message="Invalid email address."></paper-input>
+      <paper-input id="password" type="password" name="password" label="Password" error-message="Invalid password."></paper-input>
+      <!--<paper-dropdown-menu label="Choose Account" required>
+              <paper-listbox slot="dropdown-content" selected-item="" on-iron-select="" attr-for-selected="">
+                  <paper-item>Buyer</paper-item>
+                  <paper-item>Seller</paper-item>
+                </template>
+              </paper-listbox>
+      </paper-dropdown-menu> -->
+      <!--<paper-checkbox on-change="checkboxChanged">Buyer</paper-checkbox>
+      <paper-checkbox on-change="checkboxChanged">Seller</paper-checkbox>-->
+      <paper-button class="button buttonBlue" on-tap="signIn">Sign in</paper-button>
+
+      <!-- <paper-button style="width: 100%" on-tap="signIn">
+        <iron-icon icon="account-circle"></iron-icon>
+        <span>Sign in with Google</span>
+      </paper-button>-->
+    </form>
+    <footer>
+      <p>Made with ❤️ at Distributed: Trade 2017 </p>
+    </footer>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'star-login',
+
+      properties: {
+
+        signedIn: {
+          type: Boolean,
+          reflectToAttribute: true,
+          value: false
+        },
+
+        accountType: {
+          type: String,
+          reflectToAttribute: true,
+          value: ""
+        },
+
+      },
+
+      signIn: function () {
+        console.log("Hit sign in");
+        console.log(this.$.password.value);
+        // if(this.$.password.value === "buyer"){
+        //   this.user = this.$.email.value;
+        //   console.log(this.user);
+        //   signedIn = true;
+        //   console.log(signedIn);
+        // }
+        var email = this.$.email;
+        var password = this.$.password;
+        stub('firebase-auth', {
+          signInWithEmailAndPassword: function (email, password) {
+            return new Promise((resolve, reject) => {
+              resolve("Yes");
+            });
+          }
+        });
+      },
+
+      isBuyer: function () {
+        if (this.accountType === "Buyer") {
+          console.log("true");
+        }
+      }
+
+      // checkboxChanged: function (event) {
+      //   if (event.target.checked) {
+      //     // accountType = event.target.innerText;
+      //     // console.log(accountType);
+      //   }
+      // }
+    });
+  </script>
+</dom-module>
